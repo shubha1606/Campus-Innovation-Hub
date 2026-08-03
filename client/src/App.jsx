@@ -9,6 +9,7 @@ import Projects from './pages/Projects'
 import ProjectDetails from './pages/ProjectDetails'
 import AddProject from './pages/AddProject'
 import Profile from './pages/Profile'
+import About from './pages/About'
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
         <Route path="/projects/:id" element={<ProjectDetails />} />
         <Route path="/add-project" element={<AddProject />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/about" element={<About />} />
         <Route path="/*" element={<Home />} />
       </Routes>
       <Footer />

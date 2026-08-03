@@ -13,6 +13,7 @@ const navLinks = [
   { to: '/mentors', label: 'Mentors' },
   { to: '/showcase', label: 'Project Showcase' },
   { to: '/profile', label: 'Profile' },
+  { to: '/about', label: 'About' },
 ]
 
 export default function Navbar() {

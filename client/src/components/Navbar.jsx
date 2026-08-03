@@ -14,6 +14,7 @@ const navLinks = [
   { to: '/showcase', label: 'Project Showcase' },
   { to: '/profile', label: 'Profile' },
   { to: '/about', label: 'About' },
+  { to: '/contact', label: 'Contact' },
 ]
 
 export default function Navbar() {

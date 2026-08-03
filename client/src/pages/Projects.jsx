@@ -1,91 +1,9 @@
 import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
+import { projects } from '../data/projects'
 import './Projects.css'
 
 const CATEGORIES = ['All', 'AI', 'IoT', 'Web Development', 'Mobile App', 'Robotics']
-
-const projects = [
-  {
-    id: 1,
-    title: 'AI Campus Assistant',
-    category: 'AI',
-    desc: 'A smart chatbot that helps students navigate campus resources, schedules, and FAQs using NLP.',
-    team: 'Team Nexus',
-    status: 'Active',
-    color: '#4f6ef7',
-    initials: 'AI',
-  },
-  {
-    id: 2,
-    title: 'Smart Water Quality Monitor',
-    category: 'IoT',
-    desc: 'IoT-based system to monitor and report water quality in real time across campus facilities.',
-    team: 'AquaTech',
-    status: 'Active',
-    color: '#0ea5e9',
-    initials: 'WQ',
-  },
-  {
-    id: 3,
-    title: 'Student Skill Exchange',
-    category: 'Web Development',
-    desc: 'A peer-to-peer platform where students teach and learn skills from each other.',
-    team: 'SkillBridge',
-    status: 'Completed',
-    color: '#10b981',
-    initials: 'SS',
-  },
-  {
-    id: 4,
-    title: 'Campus Event Planner',
-    category: 'Mobile App',
-    desc: 'A mobile app for discovering, registering, and managing campus events and workshops.',
-    team: 'EventFlow',
-    status: 'Active',
-    color: '#f59e0b',
-    initials: 'CE',
-  },
-  {
-    id: 5,
-    title: 'Smart Waste Management',
-    category: 'IoT',
-    desc: 'Sensor-based waste bin monitoring system with route optimization for campus cleaning staff.',
-    team: 'IoT Innovators',
-    status: 'Completed',
-    color: '#6366f1',
-    initials: 'SW',
-  },
-  {
-    id: 6,
-    title: 'Autonomous Campus Bot',
-    category: 'Robotics',
-    desc: 'A self-navigating robot that delivers parcels and assists visitors across the campus.',
-    team: 'RoboSquad',
-    status: 'Active',
-    color: '#e94560',
-    initials: 'CB',
-  },
-  {
-    id: 7,
-    title: 'EcoTrack Dashboard',
-    category: 'Web Development',
-    desc: 'Real-time dashboard tracking campus energy consumption and suggesting eco-friendly alternatives.',
-    team: 'Green Coders',
-    status: 'Completed',
-    color: '#14b8a6',
-    initials: 'ET',
-  },
-  {
-    id: 8,
-    title: 'MediAssist Portal',
-    category: 'Mobile App',
-    desc: 'A student health portal for booking appointments, accessing medical records, and health tips.',
-    team: 'HealthTech',
-    status: 'Active',
-    color: '#ec4899',
-    initials: 'MA',
-  },
-]
 
 export default function Projects() {
   const [search, setSearch] = useState('')

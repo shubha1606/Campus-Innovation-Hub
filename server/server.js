@@ -18,7 +18,7 @@ app.use("/api/users", userRoutes);
 
 // Test Route
 app.get("/", (req, res) => {
-  res.send("Campus Innovation Hub Backend is Running 🚀");
+  res.send("🚀 Campus Innovation Hub Backend is Running...");
 });
 
 const PORT = process.env.PORT || 5000;

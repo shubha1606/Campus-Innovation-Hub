@@ -6,6 +6,7 @@ const navLinks = [
   { to: '/', label: 'Home' },
   { to: '/dashboard', label: 'Dashboard' },
   { to: '/projects', label: 'Projects' },
+  { to: '/add-project', label: 'Add Project' },
   { to: '/find-teammates', label: 'Find Teammates' },
   { to: '/ideas', label: 'Project Ideas' },
   { to: '/hackathons', label: 'Hackathons' },

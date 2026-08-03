@@ -125,7 +125,7 @@ export default function Dashboard() {
         <section className="dash-section">
           <h2 className="dash-section-title">Quick Actions</h2>
           <div className="quick-actions">
-            <Link to="/ideas" className="qa-btn qa-primary">＋ Add Project</Link>
+            <Link to="/add-project" className="qa-btn qa-primary">＋ Add Project</Link>
             <Link to="/showcase" className="qa-btn qa-secondary">Browse Projects</Link>
             <Link to="/profile" className="qa-btn qa-secondary">My Profile</Link>
           </div>

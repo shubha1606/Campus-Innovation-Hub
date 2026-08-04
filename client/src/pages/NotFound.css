@@ -1,0 +1,255 @@
+/* ── Page ── */
+.nf-page {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* subtle radial glow */
+.nf-page::before {
+  content: '';
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(233, 69, 96, 0.12) 0%, transparent 70%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+/* ── Card ── */
+.nf-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 56px 48px;
+  max-width: 580px;
+  width: 100%;
+  text-align: center;
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+/* ── Floating shapes ── */
+.nf-shapes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: 24px;
+}
+
+.nf-shape {
+  position: absolute;
+  font-size: 1.4rem;
+  opacity: 0.18;
+  animation: nf-float 6s ease-in-out infinite;
+}
+
+.nf-shape-1 { top: 14%;  left: 8%;  animation-delay: 0s;    animation-duration: 5.5s; }
+.nf-shape-2 { top: 10%;  right: 10%; animation-delay: 1.2s; animation-duration: 6.5s; }
+.nf-shape-3 { bottom: 16%; left: 12%; animation-delay: 0.6s; animation-duration: 7s; }
+.nf-shape-4 { bottom: 12%; right: 8%; animation-delay: 1.8s; animation-duration: 5s; }
+
+@keyframes nf-float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50%       { transform: translateY(-12px) rotate(8deg); }
+}
+
+/* ── 404 display ── */
+.nf-code {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  line-height: 1;
+}
+
+.nf-code > span {
+  font-size: 7rem;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -4px;
+  text-shadow: 0 0 40px rgba(233, 69, 96, 0.5);
+  animation: nf-pulse 3s ease-in-out infinite;
+}
+
+.nf-zero {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e94560, #c73652);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 32px rgba(233, 69, 96, 0.45);
+  animation: nf-spin-slow 8s linear infinite;
+  flex-shrink: 0;
+}
+
+.nf-zero-inner {
+  font-size: 2.6rem;
+  animation: nf-spin-slow 8s linear infinite reverse;
+}
+
+@keyframes nf-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.75; }
+}
+
+@keyframes nf-spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ── Text ── */
+.nf-title {
+  font-size: 1.8rem;
+  color: #fff;
+  font-weight: 700;
+}
+
+.nf-desc {
+  font-size: 0.92rem;
+  color: #a8b2d8;
+  line-height: 1.7;
+  max-width: 420px;
+}
+
+.nf-path {
+  background: rgba(233, 69, 96, 0.18);
+  color: #e94560;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-family: ui-monospace, Consolas, monospace;
+  word-break: break-all;
+}
+
+/* ── Suggestions ── */
+.nf-suggestions {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 18px 20px;
+}
+
+.nf-suggestions-label {
+  font-size: 0.8rem;
+  color: #8b9cc8;
+  font-weight: 500;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.nf-suggestion-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.nf-suggestion-link {
+  background: rgba(255, 255, 255, 0.07);
+  color: #c9d1d9;
+  font-size: 0.83rem;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.nf-suggestion-link:hover {
+  background: rgba(233, 69, 96, 0.18);
+  color: #fff;
+  border-color: rgba(233, 69, 96, 0.4);
+}
+
+/* ── Action buttons ── */
+.nf-actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.nf-btn-primary {
+  background: #e94560;
+  color: #fff;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.nf-btn-primary:hover {
+  background: #c73652;
+  transform: translateY(-2px);
+}
+
+.nf-btn-outline {
+  background: transparent;
+  color: #fff;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  transition: border-color 0.2s, background 0.2s, transform 0.15s;
+}
+
+.nf-btn-outline:hover {
+  border-color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+}
+
+/* ── Responsive ── */
+@media (max-width: 520px) {
+  .nf-card {
+    padding: 40px 24px;
+    gap: 16px;
+  }
+
+  .nf-code > span {
+    font-size: 5rem;
+  }
+
+  .nf-zero {
+    width: 72px;
+    height: 72px;
+  }
+
+  .nf-zero-inner {
+    font-size: 1.9rem;
+  }
+
+  .nf-title {
+    font-size: 1.4rem;
+  }
+
+  .nf-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .nf-btn-primary,
+  .nf-btn-outline {
+    width: 100%;
+    text-align: center;
+  }
+}

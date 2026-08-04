@@ -2,34 +2,42 @@ const mongoose = require("mongoose");
 
 const bookingSchema = new mongoose.Schema(
   {
-    mentor: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Mentor",
-      required: true,
-    },
-
     student: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-
-    bookingDate: {
+    mentor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Mentor",
+      required: true,
+    },
+    date: {
       type: Date,
       required: true,
     },
-
-    timeSlot: {
+    time: {
       type: String,
       required: true,
     },
-
-    purpose: {
+    topic: {
       type: String,
       required: true,
       trim: true,
     },
-
+    meetingMode: {
+      type: String,
+      enum: ["online", "offline"],
+      required: true,
+    },
+    meetingLink: {
+      type: String,
+      trim: true,
+    },
+    location: {
+      type: String,
+      trim: true,
+    },
     status: {
       type: String,
       enum: ["Pending", "Approved", "Rejected", "Completed"],
@@ -40,5 +48,17 @@ const bookingSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+bookingSchema.pre("validate", function (next) {
+  if (this.meetingMode === "online" && !this.meetingLink) {
+    this.invalidate("meetingLink", "meetingLink is required for online bookings");
+  }
+
+  if (this.meetingMode === "offline" && !this.location) {
+    this.invalidate("location", "location is required for offline bookings");
+  }
+
+  next();
+});
 
 module.exports = mongoose.model("Booking", bookingSchema);

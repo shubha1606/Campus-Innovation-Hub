@@ -7,48 +7,35 @@ const mentorSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-
-    email: {
+    profileImage: {
       type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
+      trim: true,
     },
-
-    // ADD THIS
-    password: {
-      type: String,
-      required: true,
-    },
-
     expertise: [
       {
         type: String,
+        trim: true,
       },
     ],
-
     experience: {
       type: Number,
       required: true,
     },
-
-    availability: {
-      type: String,
-      enum: ["Available", "Busy", "Unavailable"],
-      default: "Available",
-    },
-
+    skills: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
+    availability: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
     bio: {
       type: String,
-    },
-
-    company: {
-      type: String,
-    },
-
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      trim: true,
     },
   },
   {

@@ -7,34 +7,31 @@ const ideaSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-
     description: {
       type: String,
       required: true,
     },
-
-    domain: {
+    category: {
       type: String,
-      required: true,
+      trim: true,
     },
-
-    technologies: [
+    requiredSkills: [
       {
         type: String,
+        trim: true,
       },
     ],
-
-    status: {
-      type: String,
-      enum: ["Open", "In Progress", "Completed"],
-      default: "Open",
-    },
-
-    createdBy: {
+    postedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
+    teamMembers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   {
     timestamps: true,

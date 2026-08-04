@@ -2,49 +2,52 @@ const mongoose = require("mongoose");
 
 const hackathonSchema = new mongoose.Schema(
   {
-    title: {
+    name: {
       type: String,
       required: true,
       trim: true,
     },
-
     description: {
       type: String,
       required: true,
     },
-
-    organizer: {
-      type: String,
-      required: true,
-    },
-
-    startDate: {
+    date: {
       type: Date,
       required: true,
     },
-
-    endDate: {
+    registrationDeadline: {
       type: Date,
       required: true,
     },
-
     location: {
       type: String,
       required: true,
     },
-
+    mode: {
+      type: String,
+      enum: ["online", "offline"],
+      required: true,
+    },
+    teamSize: {
+      type: Number,
+      required: true,
+    },
+    organizer: {
+      type: String,
+      required: true,
+    },
+    requiredSkills: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
     participants: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
       },
     ],
-
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
   },
   {
     timestamps: true,

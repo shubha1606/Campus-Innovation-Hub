@@ -50,6 +50,10 @@ const updateTeamRequest = async (req, res) => {
       });
     }
 
+    if (request.sender.toString() !== req.user._id.toString() && request.receiver.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
     request.status = req.body.status;
 
     await request.save();

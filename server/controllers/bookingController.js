@@ -3,14 +3,17 @@ const Booking = require("../models/Booking");
 // Create Booking
 const createBooking = async (req, res) => {
   try {
-    const { mentor, bookingDate, timeSlot, purpose } = req.body;
+    const { mentor, date, time, topic, meetingMode, meetingLink, location } = req.body;
 
     const booking = await Booking.create({
       mentor,
       student: req.user._id,
-      bookingDate,
-      timeSlot,
-      purpose,
+      date,
+      time,
+      topic,
+      meetingMode,
+      meetingLink,
+      location,
     });
 
     res.status(201).json({
@@ -71,6 +74,10 @@ const updateBooking = async (req, res) => {
       });
     }
 
+    if (booking.student.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
     Object.assign(booking, req.body);
     await booking.save();
 
@@ -94,6 +101,10 @@ const deleteBooking = async (req, res) => {
       return res.status(404).json({
         message: "Booking not found",
       });
+    }
+
+    if (booking.student.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+      return res.status(403).json({ message: "Not authorized" });
     }
 
     await booking.deleteOne();

@@ -13,16 +13,14 @@ const {
 
 const { protect } = require("../middleware/authMiddleware");
 
-// Public Routes
+// Public routes
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 
-// Protected Routes
+// Protected routes
 router.get("/profile", protect, getUserProfile);
-
-// User CRUD
 router.get("/", protect, getUsers);
-router.get("/match/:skill", protect, matchUsersBySkill); // Keep BEFORE /:id
+router.get("/match/:skill", protect, matchUsersBySkill);
 router.get("/:id", protect, getUserById);
 router.put("/:id", protect, updateUser);
 

@@ -3,15 +3,15 @@ const Idea = require("../models/Idea");
 // Create Idea
 const createIdea = async (req, res) => {
   try {
-    const { title, description, domain, technologies, status } = req.body;
+    const { title, description, category, requiredSkills, teamMembers } = req.body;
 
     const idea = await Idea.create({
       title,
       description,
-      domain,
-      technologies,
-      status,
-      createdBy: req.user._id,
+      category,
+      requiredSkills: Array.isArray(requiredSkills) ? requiredSkills : [],
+      postedBy: req.user._id,
+      teamMembers: Array.isArray(teamMembers) ? teamMembers : [],
     });
 
     res.status(201).json({
@@ -29,7 +29,7 @@ const createIdea = async (req, res) => {
 const getIdeas = async (req, res) => {
   try {
     const ideas = await Idea.find().populate(
-      "createdBy",
+      "postedBy",
       "name email college"
     );
 
@@ -45,7 +45,7 @@ const getIdeas = async (req, res) => {
 const getIdeaById = async (req, res) => {
   try {
     const idea = await Idea.findById(req.params.id).populate(
-      "createdBy",
+      "postedBy",
       "name email college"
     );
 
@@ -66,46 +66,46 @@ const getIdeaById = async (req, res) => {
 // Update Idea
 const updateIdea = async (req, res) => {
   try {
-    const idea = await Idea.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const idea = await Idea.findById(req.params.id);
 
     if (!idea) {
-      return res.status(404).json({
-        message: "Idea not found",
-      });
+      return res.status(404).json({ message: "Idea not found" });
     }
+
+    if (idea.postedBy.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    Object.assign(idea, req.body);
+    await idea.save();
 
     res.status(200).json({
       message: "Idea Updated Successfully",
       idea,
     });
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    res.status(500).json({ message: error.message });
   }
 };
 
 // Delete Idea
 const deleteIdea = async (req, res) => {
   try {
-    const idea = await Idea.findByIdAndDelete(req.params.id);
+    const idea = await Idea.findById(req.params.id);
 
     if (!idea) {
-      return res.status(404).json({
-        message: "Idea not found",
-      });
+      return res.status(404).json({ message: "Idea not found" });
     }
 
-    res.status(200).json({
-      message: "Idea Deleted Successfully",
-    });
+    if (idea.postedBy.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    await idea.deleteOne();
+
+    res.status(200).json({ message: "Idea Deleted Successfully" });
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    res.status(500).json({ message: error.message });
   }
 };
 

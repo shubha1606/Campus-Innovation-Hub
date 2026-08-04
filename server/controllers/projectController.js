@@ -6,21 +6,23 @@ const createProject = async (req, res) => {
     const {
       title,
       description,
-      domain,
       technologies,
+      category,
       teamMembers,
-      mentor,
-      status,
+      githubUrl,
+      liveDemoUrl,
+      image,
     } = req.body;
 
     const project = await Project.create({
       title,
       description,
-      domain,
-      technologies,
-      teamMembers,
-      mentor,
-      status,
+      technologies: Array.isArray(technologies) ? technologies : [],
+      category,
+      teamMembers: Array.isArray(teamMembers) ? teamMembers : [],
+      githubUrl,
+      liveDemoUrl,
+      image,
       createdBy: req.user._id,
     });
 
@@ -80,51 +82,45 @@ const getProjectById = async (req, res) => {
 // Update Project
 const updateProject = async (req, res) => {
   try {
-    const project = await Project.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
+    const project = await Project.findById(req.params.id);
 
     if (!project) {
-      return res.status(404).json({
-        message: "Project not found",
-      });
+      return res.status(404).json({ message: "Project not found" });
     }
+
+    if (project.createdBy.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    Object.assign(project, req.body);
+    await project.save();
 
     res.status(200).json({
       message: "Project Updated Successfully",
       project,
     });
-
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    res.status(500).json({ message: error.message });
   }
 };
 // Delete Project
 const deleteProject = async (req, res) => {
   try {
-    const project = await Project.findByIdAndDelete(req.params.id);
+    const project = await Project.findById(req.params.id);
 
     if (!project) {
-      return res.status(404).json({
-        message: "Project not found",
-      });
+      return res.status(404).json({ message: "Project not found" });
     }
 
-    res.status(200).json({
-      message: "Project Deleted Successfully",
-    });
+    if (project.createdBy.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+      return res.status(403).json({ message: "Not authorized" });
+    }
 
+    await project.deleteOne();
+
+    res.status(200).json({ message: "Project Deleted Successfully" });
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    res.status(500).json({ message: error.message });
   }
 };
 

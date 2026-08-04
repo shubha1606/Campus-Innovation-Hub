@@ -1,63 +1,57 @@
 const mongoose = require("mongoose");
 
-const eventSchema = new mongoose.Schema(
+const hackathonSchema = new mongoose.Schema(
   {
-    title: {
+    name: {
       type: String,
       required: true,
       trim: true,
     },
-
     description: {
       type: String,
       required: true,
     },
-
-    organizer: {
-      type: String,
-      required: true,
-    },
-
     date: {
       type: Date,
       required: true,
     },
-
+    registrationDeadline: {
+      type: Date,
+      required: true,
+    },
     location: {
       type: String,
       required: true,
     },
-
-    category: {
+    mode: {
       type: String,
-      enum: [
-        "Hackathon",
-        "Workshop",
-        "Seminar",
-        "Competition",
-        "Other"
-      ],
-      default: "Other",
+      enum: ["online", "offline"],
+      required: true,
     },
-
+    teamSize: {
+      type: Number,
+      required: true,
+    },
+    organizer: {
+      type: String,
+      required: true,
+    },
+    requiredSkills: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
     participants: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-      }
+      },
     ],
-
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-
   },
   {
     timestamps: true,
   }
 );
 
-
-module.exports = mongoose.model("Event", eventSchema);
+module.exports = mongoose.model("Hackathon", hackathonSchema);

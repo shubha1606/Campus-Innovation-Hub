@@ -1,35 +1,46 @@
 const mongoose = require("mongoose");
 
-const mentorSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true
+const mentorSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    profileImage: {
+      type: String,
+      trim: true,
+    },
+    expertise: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
+    experience: {
+      type: Number,
+      required: true,
+    },
+    skills: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
+    availability: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
+    bio: {
+      type: String,
+      trim: true,
+    },
   },
-  email: {
-    type: String,
-    required: true
-  },
-  company: {
-    type: String
-  },
-  designation: {
-    type: String
-  },
-  expertise: [{
-    type: String
-  }],
-  experience: {
-    type: Number
-  },
-  linkedin: {
-    type: String
-  },
-  availability: {
-    type: Boolean,
-    default: true
+  {
+    timestamps: true,
   }
-}, {
-  timestamps: true
-});
+);
 
 module.exports = mongoose.model("Mentor", mentorSchema);

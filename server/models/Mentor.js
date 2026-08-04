@@ -15,10 +15,16 @@ const mentorSchema = new mongoose.Schema(
       lowercase: true,
     },
 
+    // ADD THIS
+    password: {
+      type: String,
+      required: true,
+    },
+
     expertise: [
       {
         type: String,
-      }
+      },
     ],
 
     experience: {
@@ -28,11 +34,7 @@ const mentorSchema = new mongoose.Schema(
 
     availability: {
       type: String,
-      enum: [
-        "Available",
-        "Busy",
-        "Unavailable"
-      ],
+      enum: ["Available", "Busy", "Unavailable"],
       default: "Available",
     },
 
@@ -47,13 +49,11 @@ const mentorSchema = new mongoose.Schema(
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-    }
-
+    },
   },
   {
     timestamps: true,
   }
 );
-
 
 module.exports = mongoose.model("Mentor", mentorSchema);

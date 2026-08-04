@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+const Mentor = require("../models/Mentor");
 
-const protect = async (req, res, next) => {
+const mentorProtect = async (req, res, next) => {
   let token;
 
   if (
@@ -13,12 +13,20 @@ const protect = async (req, res, next) => {
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      req.user = await User.findById(decoded.id).select("-password");
+      const mentor = await Mentor.findById(decoded.id).select("-password");
+
+      if (!mentor) {
+        return res.status(401).json({
+          message: "Mentor not found",
+        });
+      }
+
+      req.user = mentor;
 
       next();
     } catch (error) {
       return res.status(401).json({
-        message: "Invalid token",
+        message: "Invalid mentor token",
       });
     }
   } else {
@@ -28,4 +36,4 @@ const protect = async (req, res, next) => {
   }
 };
 
-module.exports = { protect };
+module.exports = { mentorProtect };

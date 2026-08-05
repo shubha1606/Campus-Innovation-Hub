@@ -38,6 +38,10 @@ const bookingSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    mentorNote: {
+      type: String,
+      trim: true,
+    },
     status: {
       type: String,
       enum: ["Pending", "Approved", "Rejected", "Completed"],
@@ -49,16 +53,16 @@ const bookingSchema = new mongoose.Schema(
   }
 );
 
-bookingSchema.pre("validate", function (next) {
-  if (this.meetingMode === "online" && !this.meetingLink) {
-    this.invalidate("meetingLink", "meetingLink is required for online bookings");
-  }
+bookingSchema.pre('validate', function () {
+  if (this.status === 'Approved') {
+    if (this.meetingMode === 'online' && !this.meetingLink) {
+      this.invalidate('meetingLink', 'meetingLink is required for online approved bookings');
+    }
 
-  if (this.meetingMode === "offline" && !this.location) {
-    this.invalidate("location", "location is required for offline bookings");
+    if (this.meetingMode === 'offline' && !this.location) {
+      this.invalidate('location', 'location is required for offline approved bookings');
+    }
   }
-
-  next();
 });
 
 module.exports = mongoose.model("Booking", bookingSchema);

@@ -115,7 +115,7 @@ const deleteStartup = async (req, res) => {
       });
     }
 
-    if (startup.createdBy.toString() !== req.user._id.toString()) {
+    if (startup.createdBy.toString() !== req.user._id.toString() && req.user.role !== "admin") {
       return res.status(403).json({
         message: "Not authorized",
       });

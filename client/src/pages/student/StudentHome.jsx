@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FolderOpen, Calendar, Rocket, Users, TrendingUp, Plus, ArrowRight } from 'lucide-react'
-import { getProjects, getEvents, getStartups, getMentors } from '../../services/api'
+import { getDashboardStats, getProjects, getEvents } from '../../services/api'
 import { useAuth } from '../../context/AuthContext'
 import { PageSpinner } from '../../components/Spinner'
 import { formatDate, timeAgo } from '../../utils/helpers'
@@ -14,9 +14,9 @@ export default function StudentHome() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    Promise.all([getProjects(), getEvents(), getStartups(), getMentors()])
-      .then(([p, e, s, m]) => {
-        setStats({ projects: p.data.length, events: e.data.length, startups: s.data.length, mentors: m.data.length })
+    Promise.all([getDashboardStats(), getProjects(), getEvents()])
+      .then(([s, p, e]) => {
+        setStats(s.data.stats)
         setRecentProjects(p.data.slice(0, 4))
         setUpcomingEvents(e.data.slice(0, 3))
       })
@@ -26,10 +26,10 @@ export default function StudentHome() {
   if (loading) return <PageSpinner />
 
   const statCards = [
-    { label: 'Total Projects', value: stats?.projects, icon: FolderOpen, accent: '#D4AF37' },
-    { label: 'Events', value: stats?.events, icon: Calendar, accent: '#22c55e' },
-    { label: 'Startups', value: stats?.startups, icon: Rocket, accent: '#f97316' },
-    { label: 'Mentors', value: stats?.mentors, icon: Users, accent: '#a78bfa' },
+    { label: 'Total Projects', value: stats?.totalProjects, icon: FolderOpen, accent: '#D4AF37' },
+    { label: 'Events', value: stats?.totalEvents, icon: Calendar, accent: '#22c55e' },
+    { label: 'Startups', value: stats?.totalStartups, icon: Rocket, accent: '#f97316' },
+    { label: 'Mentors', value: stats?.totalMentors, icon: Users, accent: '#a78bfa' },
   ]
 
   return (

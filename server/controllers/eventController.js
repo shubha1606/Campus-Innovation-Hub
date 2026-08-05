@@ -108,7 +108,7 @@ const updateEvent = async(req,res)=>{
     }
 
 
-    if(event.createdBy.toString() !== req.user._id.toString()){
+    if(event.createdBy.toString() !== req.user._id.toString() && req.user.role !== "admin"){
       return res.status(403).json({
         message:"Not authorized"
       });
@@ -151,7 +151,7 @@ const deleteEvent = async(req,res)=>{
     }
 
 
-    if(event.createdBy.toString() !== req.user._id.toString()){
+    if(event.createdBy.toString() !== req.user._id.toString() && req.user.role !== "admin"){
       return res.status(403).json({
         message:"Not authorized"
       });

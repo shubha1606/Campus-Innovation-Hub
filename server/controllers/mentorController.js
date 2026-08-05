@@ -24,12 +24,10 @@ const registerMentor = async (req, res) => {
       });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
     const mentor = await Mentor.create({
       name,
       email,
-      password: hashedPassword,
+      password,
       expertise,
       experience,
       availability,

@@ -1,21 +1,24 @@
 import { useState, useRef, useEffect } from 'react'
 import { NavLink, useNavigate, Outlet } from 'react-router-dom'
 import {
-  Menu, X, Sun, Moon, Bell, Search, LogOut, Settings, ChevronDown,
+  Menu, X, Sun, Moon, Search, LogOut, Settings, ChevronDown,
   Home, User, FolderOpen, Calendar, Lightbulb, Users, MessageSquare,
   BarChart3, BookOpen, Rocket, Shield,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import Avatar from '../components/Avatar'
+import Notifications from '../components/Notifications'
 import toast from 'react-hot-toast'
 
 const studentNav = [
   { to: '/student', icon: Home, label: 'Home' },
   { to: '/student/profile', icon: User, label: 'Profile' },
+    { to: '/student/bookings', icon: Calendar, label: 'Bookings' },
   { to: '/student/projects', icon: FolderOpen, label: 'Projects' },
   { to: '/student/events', icon: Calendar, label: 'Events' },
   { to: '/student/startups', icon: Rocket, label: 'Startups' },
   { to: '/student/mentors', icon: Users, label: 'Mentors' },
+  { to: '/student/team-requests', icon: MessageSquare, label: 'Team Requests' },
   { to: '/student/messages', icon: MessageSquare, label: 'Messages' },
   { to: '/student/settings', icon: Settings, label: 'Settings' },
 ]
@@ -187,16 +190,7 @@ export default function DashboardLayout() {
               {lightMode ? <Moon size={18} /> : <Sun size={18} />}
             </button>
 
-            {/* Notifications */}
-            <button
-              className="p-2 rounded-lg transition-colors relative"
-              style={{ color: 'var(--muted)' }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--gold-dim)'; e.currentTarget.style.color = 'var(--gold)' }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--muted)' }}
-            >
-              <Bell size={18} />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full" style={{ background: '#D4AF37' }} />
-            </button>
+<Notifications />
 
             {/* Profile dropdown */}
             <div className="relative" ref={profileRef}>

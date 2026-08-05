@@ -27,6 +27,8 @@ api.interceptors.response.use(
 export const loginUser = (data) => api.post('/auth/login', data)
 export const registerUser = (data) => api.post('/auth/register', data)
 export const getMe = () => api.get('/auth/me')
+export const forgotPassword = (data) => api.post('/auth/forgot-password', data)
+export const resetPassword = (token, data) => api.post(`/auth/reset-password/${token}`, data)
 
 // Mentor Auth
 export const loginMentor = (data) => api.post('/mentors/login', data)
@@ -37,6 +39,7 @@ export const getMentorProfile = () => api.get('/mentors/profile')
 export const getUsers = () => api.get('/users')
 export const getUserById = (id) => api.get(`/users/${id}`)
 export const updateUser = (id, data) => api.put(`/users/${id}`, data)
+export const deleteUser = (id) => api.delete(`/users/${id}`)
 export const matchUsersBySkill = (skill) => api.get(`/users/match/${skill}`)
 
 // Projects
@@ -70,7 +73,7 @@ export const deleteStartup = (id) => api.delete(`/startups/${id}`)
 export const getDashboardStats = () => api.get('/dashboard')
 
 // Bookings
-export const getBookings = () => api.get('/bookings')
+export const getBookings = (params) => api.get('/bookings', { params })
 export const createBooking = (data) => api.post('/bookings', data)
 export const updateBooking = (id, data) => api.put(`/bookings/${id}`, data)
 export const deleteBooking = (id) => api.delete(`/bookings/${id}`)
@@ -79,6 +82,17 @@ export const deleteBooking = (id) => api.delete(`/bookings/${id}`)
 export const getTeamRequests = () => api.get('/team-requests')
 export const createTeamRequest = (data) => api.post('/team-requests', data)
 export const updateTeamRequest = (id, data) => api.put(`/team-requests/${id}`, data)
+
+// Chat & Messaging
+export const getChatUsers = () => api.get('/messages/users')
+export const getMessages = (targetId, targetModel) => api.get(`/messages/${targetId}`, { params: { targetModel } })
+export const createMessage = (data) => api.post('/messages', data)
+export const uploadMessageAttachment = (formData) => api.post('/messages/upload', formData)
+
+// Notifications
+export const getNotifications = () => api.get('/notifications')
+export const markNotificationRead = (id) => api.put(`/notifications/${id}/read`)
+export const markAllNotificationsRead = () => api.put('/notifications/read-all')
 
 // Ideas
 export const getIdeas = () => api.get('/ideas')

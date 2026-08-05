@@ -17,7 +17,7 @@ export default function StudentMentors() {
   const [modal, setModal] = useState(false)
   const [selectedMentor, setSelectedMentor] = useState(null)
   const [saving, setSaving] = useState(false)
-  const [booking, setBooking] = useState({ date: '', time: '', topic: '', meetingMode: 'Online', meetingLink: '' })
+  const [booking, setBooking] = useState({ date: '', time: '', topic: '', meetingMode: 'online' })
   const debouncedSearch = useDebounce(search)
   const PER_PAGE = 9
 
@@ -32,12 +32,19 @@ export default function StudentMentors() {
     if (!booking.date || !booking.topic) { toast.error('Date and topic are required'); return }
     setSaving(true)
     try {
-      await createBooking({ mentor: selectedMentor._id, ...booking })
+      await createBooking({
+        mentor: selectedMentor._id,
+        date: booking.date,
+        time: booking.time,
+        topic: booking.topic,
+        meetingMode: String(booking.meetingMode || 'online').toLowerCase(),
+      })
       toast.success('Mentorship request sent!')
       setModal(false)
-      setBooking({ date: '', time: '', topic: '', meetingMode: 'Online', meetingLink: '' })
+      setBooking({ date: '', time: '', topic: '', meetingMode: 'online' })
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to send request')
+      console.error('Booking request error', err)
+      toast.error(err.response?.data?.message || err.message || 'Failed to send request')
     } finally { setSaving(false) }
   }
 
@@ -102,13 +109,13 @@ export default function StudentMentors() {
             <div><label className="label">Time</label><input type="time" className="input" value={booking.time} onChange={(e) => setBooking({ ...booking, time: e.target.value })} /></div>
           </div>
           <div><label className="label">Meeting Mode</label>
-            <select className="input" value={booking.meetingMode} onChange={(e) => setBooking({ ...booking, meetingMode: e.target.value })}>
-              <option>Online</option><option>Offline</option>
+            <select className="input" value={booking.meetingMode} onChange={(e) => setBooking({ ...booking, meetingMode: e.target.value.toLowerCase() })}>
+              <option value="online">Online</option><option value="offline">Offline</option>
             </select>
           </div>
-          {booking.meetingMode === 'Online' && (
-            <div><label className="label">Meeting Link</label><input className="input" value={booking.meetingLink} onChange={(e) => setBooking({ ...booking, meetingLink: e.target.value })} placeholder="https://meet.google.com/…" /></div>
-          )}
+          <p className="text-xs" style={{ color: 'var(--muted)' }}>
+            The mentor will provide the meeting link or offline details when they approve your request.
+          </p>
           <div className="flex gap-2 justify-end pt-2">
             <button type="button" className="btn-secondary" onClick={() => setModal(false)}>Cancel</button>
             <button type="submit" className="btn-primary" disabled={saving}>{saving ? 'Sending…' : 'Send Request'}</button>

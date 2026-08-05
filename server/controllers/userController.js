@@ -9,7 +9,7 @@ const generateToken = (id) => {
 
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password, role, college, department, year, skills } = req.body;
+    const { name, email, password, role, college, branch, year, skills } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({ message: "Please provide name, email, and password" });
@@ -28,7 +28,7 @@ const registerUser = async (req, res) => {
       password,
       role,
       college,
-      department,
+      branch,
       year,
       skills: Array.isArray(skills) ? skills : [],
     });
@@ -104,7 +104,7 @@ const getUserById = async (req, res) => {
 
 const updateUser = async (req, res) => {
   try {
-    const { name, email, password, role, college, department, year, skills } = req.body;
+    const { name, email, password, role, college, branch, year, skills } = req.body;
 
     const userId = req.params.id;
     const currentUserId = req.user?._id?.toString() || req.user?.id;
@@ -125,15 +125,32 @@ const updateUser = async (req, res) => {
     if (email !== undefined) updateData.email = String(email).toLowerCase();
     if (role !== undefined) updateData.role = role;
     if (college !== undefined) updateData.college = college;
-    if (department !== undefined) updateData.department = department;
+    if (branch !== undefined) updateData.branch = branch;
     if (year !== undefined) updateData.year = Number(year);
     if (skills !== undefined) updateData.skills = Array.isArray(skills) ? skills : [];
+    if (req.body.profileImage !== undefined) updateData.profileImage = req.body.profileImage;
     if (password) updateData.password = password;
 
     Object.assign(user, updateData);
     await user.save();
 
     res.status(200).json(user.toJSON());
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const deleteUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    await user.deleteOne();
+
+    res.status(200).json({ message: 'User deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -165,5 +182,6 @@ module.exports = {
   getUsers,
   getUserById,
   updateUser,
+  deleteUser,
   matchUsersBySkill,
 };

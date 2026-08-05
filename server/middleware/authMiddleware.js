@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const Mentor = require("../models/Mentor");
 
 const protect = async (req, res, next) => {
   const authHeader = req.headers.authorization || req.headers.Authorization;
@@ -28,13 +29,23 @@ const protect = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = await User.findById(decoded.id).select("-password");
-
-    if (!req.user) {
-      return res.status(401).json({ message: "User not found" });
+    // Try to find a User first
+    let user = await User.findById(decoded.id).select("-password");
+    if (user) {
+      req.user = user;
+      return next();
     }
 
-    return next();
+    // Try Mentor
+    const mentor = await Mentor.findById(decoded.id).select("-password");
+    if (mentor) {
+      // normalize to include a role for downstream checks
+      mentor.role = 'mentor';
+      req.user = mentor;
+      return next();
+    }
+
+    return res.status(401).json({ message: "User not found" });
   } catch (error) {
     return res.status(401).json({ message: "Invalid or expired token" });
   }

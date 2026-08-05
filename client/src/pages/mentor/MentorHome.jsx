@@ -15,14 +15,14 @@ export default function MentorHome() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    Promise.all([getUsers(), getProjects(), getEvents(), getBookings()])
+    Promise.all([getUsers(), getProjects(), getEvents(), getBookings({ mentorId: user?._id })])
       .then(([u, p, e, b]) => {
         setStats({ students: u.data.filter((x) => x.role === 'student').length, projects: p.data.length, events: e.data.length, requests: b.data.length })
         setRecentProjects(p.data.slice(0, 4))
         setPendingBookings(b.data.slice(0, 3))
       })
       .finally(() => setLoading(false))
-  }, [])
+  }, [user?._id])
 
   if (loading) return <PageSpinner />
 

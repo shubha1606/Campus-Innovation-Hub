@@ -31,7 +31,8 @@ export default function Login() {
         const { data } = await loginMentor({ email: form.email, password: form.password })
         login(data.token, data.mentor, 'mentor')
         toast.success(`Welcome back, ${data.mentor.name}!`)
-        navigate('/mentor')
+        // force a full navigation to ensure AuthContext loads mentor profile
+        window.location.replace('/mentor')
       }
     } catch (err) {
       toast.error(err.response?.data?.message || 'Login failed')

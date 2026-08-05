@@ -2,16 +2,24 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Lightbulb, Mail } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { forgotPassword } from '../services/api'
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('')
   const [sent, setSent] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!email) { toast.error('Enter your email'); return }
-    setSent(true)
-    toast.success('Reset instructions sent (feature requires backend email setup)')
+    setLoading(true)
+    try {
+      await forgotPassword({ email })
+      setSent(true)
+      toast.success('Reset instructions sent if the account exists')
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to send reset email')
+    } finally { setLoading(false) }
   }
 
   return (
@@ -53,8 +61,9 @@ export default function ForgotPassword() {
                 type="submit"
                 className="w-full py-2.5 rounded-xl font-semibold text-sm text-white"
                 style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)' }}
+                disabled={loading}
               >
-                Send Reset Link
+                {loading ? 'Sending…' : 'Send Reset Link'}
               </button>
               <p className="text-center text-sm text-slate-400">
                 <Link to="/login" className="text-indigo-400 hover:text-indigo-300">Back to Login</Link>

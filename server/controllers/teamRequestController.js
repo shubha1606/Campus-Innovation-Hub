@@ -1,8 +1,13 @@
 const TeamRequest = require("../models/TeamRequest");
+const { createNotification } = require("./notificationController");
 
 // Create Team Request
 const createTeamRequest = async (req, res) => {
   try {
+    if (req.user.role !== 'student') {
+      return res.status(403).json({ message: 'Only students can create team requests' })
+    }
+
     const { receiver, project, message } = req.body;
 
     const request = await TeamRequest.create({
@@ -11,6 +16,18 @@ const createTeamRequest = async (req, res) => {
       project,
       message,
     });
+
+    await createNotification(
+      {
+        userId: receiver,
+        userModel: 'User',
+        type: "teamRequest",
+        title: "New team request",
+        message: `${req.user.name} sent you a new team request.`,
+        link: "/student/team-requests",
+      },
+      req
+    );
 
     res.status(201).json({
       message: "Team Request Sent Successfully",
@@ -23,12 +40,21 @@ const createTeamRequest = async (req, res) => {
   }
 };
 
-// Get All Team Requests
+// Get Team Requests relevant to the current user
 const getTeamRequests = async (req, res) => {
   try {
-    const requests = await TeamRequest.find()
-      .populate("sender", "name email")
-      .populate("receiver", "name email")
+    const filter = {}
+
+    if (req.user.role === 'student') {
+      filter.$or = [{ sender: req.user._id }, { receiver: req.user._id }]
+    } else {
+      // Only students participate in team requests
+      return res.status(200).json([])
+    }
+
+    const requests = await TeamRequest.find(filter)
+      .populate("sender", "name email profileImage")
+      .populate("receiver", "name email profileImage")
       .populate("project", "title");
 
     res.status(200).json(requests);
@@ -57,6 +83,18 @@ const updateTeamRequest = async (req, res) => {
     request.status = req.body.status;
 
     await request.save();
+
+    await createNotification(
+      {
+        userId: request.sender,
+        userModel: 'User',
+        type: "teamRequest",
+        title: `Team request ${request.status.toLowerCase()}`,
+        message: `Your team request was ${request.status.toLowerCase()}.`,
+        link: "/student/team-requests",
+      },
+      req
+    );
 
     res.status(200).json({
       message: "Team Request Updated Successfully",

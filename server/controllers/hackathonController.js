@@ -56,17 +56,22 @@ const getHackathonById = async (req, res) => {
 // Update Hackathon
 const updateHackathon = async (req, res) => {
   try {
-    const hackathon = await Hackathon.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
+    const hackathon = await Hackathon.findById(req.params.id);
 
     if (!hackathon) {
       return res.status(404).json({
         message: "Hackathon not found",
       });
     }
+
+    if (hackathon.createdBy.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+      return res.status(403).json({
+        message: "Not authorized",
+      });
+    }
+
+    Object.assign(hackathon, req.body);
+    await hackathon.save();
 
     res.status(200).json({
       message: "Hackathon Updated Successfully",
@@ -82,13 +87,21 @@ const updateHackathon = async (req, res) => {
 // Delete Hackathon
 const deleteHackathon = async (req, res) => {
   try {
-    const hackathon = await Hackathon.findByIdAndDelete(req.params.id);
+    const hackathon = await Hackathon.findById(req.params.id);
 
     if (!hackathon) {
       return res.status(404).json({
         message: "Hackathon not found",
       });
     }
+
+    if (hackathon.createdBy.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+      return res.status(403).json({
+        message: "Not authorized",
+      });
+    }
+
+    await hackathon.deleteOne();
 
     res.status(200).json({
       message: "Hackathon Deleted Successfully",

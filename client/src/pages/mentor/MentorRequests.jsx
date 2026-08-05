@@ -1,38 +1,75 @@
 import { useEffect, useState } from 'react'
 import { CheckCircle, XCircle, BookOpen, Clock } from 'lucide-react'
 import { getBookings, updateBooking } from '../../services/api'
+import { useAuth } from '../../context/AuthContext'
 import { PageSpinner } from '../../components/Spinner'
 import { formatDate } from '../../utils/helpers'
 import Avatar from '../../components/Avatar'
+import Modal from '../../components/Modal'
 import toast from 'react-hot-toast'
 
 export default function MentorRequests() {
   const [bookings, setBookings] = useState([])
   const [loading, setLoading] = useState(true)
   const [updating, setUpdating] = useState(null)
+  const [reviewModalOpen, setReviewModalOpen] = useState(false)
+  const [reviewItem, setReviewItem] = useState(null)
+  const [meetingDetails, setMeetingDetails] = useState('')
+  const [mentorNote, setMentorNote] = useState('')
+  const [reviewAction, setReviewAction] = useState('approve')
+
+  const { user } = useAuth()
 
   const load = () => {
     setLoading(true)
-    getBookings().then(({ data }) => setBookings(data)).finally(() => setLoading(false))
+    const mentorId = user?._id
+    getBookings(mentorId ? { mentorId } : undefined).then(({ data }) => setBookings(data)).finally(() => setLoading(false))
   }
-  useEffect(load, [])
+  useEffect(load, [user])
 
-  const handleAction = async (id, status) => {
-    setUpdating(id)
+  const openReviewModal = (booking, action) => {
+    setReviewItem(booking)
+    setReviewAction(action)
+    setMeetingDetails(action === 'approve' ? (booking.meetingMode === 'online' ? booking.meetingLink || '' : booking.location || '') : '')
+    setMentorNote(booking.mentorNote || '')
+    setReviewModalOpen(true)
+  }
+
+  const handleReviewSubmit = async () => {
+    if (!reviewItem) return
+    const payload = {
+      status: reviewAction === 'approve' ? 'Approved' : 'Rejected',
+      mentorNote: mentorNote.trim() || undefined,
+    }
+
+    if (reviewAction === 'approve') {
+      if (!meetingDetails.trim()) {
+        toast.error(reviewItem?.meetingMode === 'online' ? 'Enter the meeting link' : 'Enter the offline details')
+        return
+      }
+      if (reviewItem.meetingMode === 'online') payload.meetingLink = meetingDetails.trim()
+      else payload.location = meetingDetails.trim()
+    }
+
+    setUpdating(reviewItem._id)
     try {
-      await updateBooking(id, { status })
-      toast.success(`Request ${status}`)
+      await updateBooking(reviewItem._id, payload)
+      toast.success(`Request ${reviewAction === 'approve' ? 'approved' : 'rejected'}`)
+      setReviewModalOpen(false)
       load()
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to update')
-    } finally { setUpdating(null) }
+      toast.error(err.response?.data?.message || `Failed to ${reviewAction === 'approve' ? 'approve' : 'reject'}`)
+    } finally {
+      setUpdating(null)
+    }
   }
 
   if (loading) return <PageSpinner />
 
   const statusStyle = (s) => {
-    if (s === 'approved') return { background: 'rgba(34,197,94,0.12)', color: '#22c55e' }
-    if (s === 'rejected') return { background: 'rgba(239,68,68,0.12)', color: '#ef4444' }
+    const st = String(s || '').toLowerCase()
+    if (st === 'approved') return { background: 'rgba(34,197,94,0.12)', color: '#22c55e' }
+    if (st === 'rejected') return { background: 'rgba(239,68,68,0.12)', color: '#ef4444' }
     return { background: 'rgba(234,179,8,0.12)', color: '#eab308' }
   }
 
@@ -60,17 +97,22 @@ export default function MentorRequests() {
                   <span className="flex items-center gap-1"><Clock size={11} style={{ color: 'var(--gold)' }} /> {formatDate(b.date)}{b.time ? ` at ${b.time}` : ''}</span>
                   <span>{b.meetingMode}</span>
                 </div>
+                {b.status === 'Approved' && (b.meetingMode === 'online' ? (
+                  <p className="text-xs mt-2" style={{ color: 'var(--muted)' }}>Link: <a href={b.meetingLink} className="text-indigo-300 break-all" target="_blank" rel="noreferrer">{b.meetingLink}</a></p>
+                ) : (
+                  <p className="text-xs mt-2" style={{ color: 'var(--muted)' }}>Offline details: {b.location}</p>
+                ))}
               </div>
               <div className="flex items-center gap-2">
                 <span className="badge text-xs" style={statusStyle(b.status)}>{b.status || 'pending'}</span>
-                {(!b.status || b.status === 'pending') && (
+                {(!b.status || String(b.status).toLowerCase() === 'pending') && (
                   <>
                     <button
                       className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
                       style={{ background: 'rgba(34,197,94,0.12)', color: '#22c55e' }}
                       onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(34,197,94,0.2)'}
                       onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(34,197,94,0.12)'}
-                      onClick={() => handleAction(b._id, 'approved')}
+                      onClick={() => openReviewModal(b, 'approve')}
                       disabled={updating === b._id}
                     >
                       <CheckCircle size={13} /> Approve
@@ -80,7 +122,7 @@ export default function MentorRequests() {
                       style={{ background: 'rgba(239,68,68,0.12)', color: '#ef4444' }}
                       onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(239,68,68,0.2)'}
                       onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(239,68,68,0.12)'}
-                      onClick={() => handleAction(b._id, 'rejected')}
+                      onClick={() => openReviewModal(b, 'reject')}
                       disabled={updating === b._id}
                     >
                       <XCircle size={13} /> Reject
@@ -92,6 +134,52 @@ export default function MentorRequests() {
           ))}
         </div>
       )}
+
+      <Modal open={reviewModalOpen} onClose={() => setReviewModalOpen(false)} title={`${reviewAction === 'approve' ? 'Approve' : 'Reject'} Request — ${reviewItem?.student?.name}`}>
+        {reviewItem && (
+          <div className="space-y-4">
+            <p className="text-sm" style={{ color: 'var(--muted)' }}>
+              {reviewAction === 'approve'
+                ? `Provide the ${reviewItem.meetingMode === 'online' ? 'meeting link' : 'offline details'} and approve the request.`
+                : 'Optional note for the student explaining the rejection.'
+              }
+            </p>
+            {reviewAction === 'approve' && (
+              <>
+                <div>
+                  <label className="label">Mode</label>
+                  <input className="input" value={reviewItem.meetingMode} disabled />
+                </div>
+                <div>
+                  <label className="label">{reviewItem.meetingMode === 'online' ? 'Meeting Link' : 'Offline Details'}</label>
+                  <input
+                    className="input"
+                    value={meetingDetails}
+                    onChange={(e) => setMeetingDetails(e.target.value)}
+                    placeholder={reviewItem.meetingMode === 'online' ? 'https://meet.google.com/...' : 'Enter venue, room, or instructions'}
+                  />
+                </div>
+              </>
+            )}
+            <div>
+              <label className="label">Message to student (optional)</label>
+              <textarea
+                className="input resize-none"
+                rows={3}
+                value={mentorNote}
+                onChange={(e) => setMentorNote(e.target.value)}
+                placeholder="Add a note for the student"
+              />
+            </div>
+            <div className="flex gap-2 justify-end pt-2">
+              <button type="button" className="btn-secondary" onClick={() => setReviewModalOpen(false)}>Cancel</button>
+              <button type="button" className="btn-primary" onClick={handleReviewSubmit} disabled={updating === reviewItem._id}>
+                {updating === reviewItem._id ? `${reviewAction === 'approve' ? 'Approving…' : 'Rejecting…'}` : `${reviewAction === 'approve' ? 'Approve Request' : 'Reject Request'}`}
+              </button>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   )
 }

@@ -1,12 +1,14 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { AuthProvider, useAuth } from './context/AuthContext'
+import { SocketProvider } from './context/SocketContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import DashboardLayout from './layouts/DashboardLayout'
 
 import Login from './pages/Login'
 import Register from './pages/Register'
 import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
 import NotFound from './pages/NotFound'
 import AccessDenied from './pages/AccessDenied'
 
@@ -14,10 +16,12 @@ import StudentHome from './pages/student/StudentHome'
 import StudentProfile from './pages/student/StudentProfile'
 import StudentProjects from './pages/student/StudentProjects'
 import StudentEvents from './pages/student/StudentEvents'
+import StudentBookings from './pages/student/StudentBookings'
 import StudentStartups from './pages/student/StudentStartups'
 import StudentMentors from './pages/student/StudentMentors'
 import StudentMessages from './pages/student/StudentMessages'
 import StudentSettings from './pages/student/StudentSettings'
+import StudentTeamRequests from './pages/student/StudentTeamRequests'
 
 import MentorHome from './pages/mentor/MentorHome'
 import MentorProfile from './pages/mentor/MentorProfile'
@@ -56,15 +60,18 @@ function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password/:token" element={<ResetPassword />} />
       <Route path="/access-denied" element={<AccessDenied />} />
 
       <Route element={<ProtectedRoute allowedRoles={['student']}><DashboardLayout /></ProtectedRoute>}>
         <Route path="/student" element={<StudentHome />} />
         <Route path="/student/profile" element={<StudentProfile />} />
+      <Route path="/student/bookings" element={<StudentBookings />} />
         <Route path="/student/projects" element={<StudentProjects />} />
         <Route path="/student/events" element={<StudentEvents />} />
         <Route path="/student/startups" element={<StudentStartups />} />
         <Route path="/student/mentors" element={<StudentMentors />} />
+        <Route path="/student/team-requests" element={<StudentTeamRequests />} />
         <Route path="/student/messages" element={<StudentMessages />} />
         <Route path="/student/settings" element={<StudentSettings />} />
       </Route>
@@ -99,8 +106,9 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AppRoutes />
-        <Toaster
+        <SocketProvider>
+          <AppRoutes />
+          <Toaster
           position="top-right"
           toastOptions={{
             duration: 3500,
@@ -115,6 +123,7 @@ export default function App() {
             error: { iconTheme: { primary: '#ef4444', secondary: 'white' } },
           }}
         />
+        </SocketProvider>
       </AuthProvider>
     </BrowserRouter>
   )

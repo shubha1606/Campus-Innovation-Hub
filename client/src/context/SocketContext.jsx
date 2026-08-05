@@ -18,10 +18,10 @@ export function SocketProvider({ children }) {
   useEffect(() => {
     if (!user) return
 
-    const client = io('http://localhost:5000', {
-      transports: ['websocket'],
-      auth: { token: localStorage.getItem('token') },
-    })
+   const client = io('https://campus-innovation-hub.onrender.com', {
+  transports: ['websocket'],
+  auth: { token: localStorage.getItem('token') },
+})
 
     const userModel = role === 'mentor' ? 'Mentor' : 'User'
 

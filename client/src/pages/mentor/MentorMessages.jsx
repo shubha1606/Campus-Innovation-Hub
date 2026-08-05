@@ -7,8 +7,7 @@ import Avatar from '../../components/Avatar'
 import { PageSpinner } from '../../components/Spinner'
 import { timeAgo } from '../../utils/helpers'
 import toast from 'react-hot-toast'
-
-const ATTACHMENT_HOST = 'http://localhost:5000'
+const ATTACHMENT_HOST = 'https://campus-innovation-hub.onrender.com'
 
 export default function MentorMessages() {
   const { user, role } = useAuth()

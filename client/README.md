@@ -123,7 +123,7 @@ npm run lint       # ESLint
 
 `SocketContext` manages the socket lifecycle:
 
-- Connects to `http://localhost:5000` with JWT in `auth.token` when a user is logged in.
+- Connects to ('https://campus-innovation-hub.onrender.com') with JWT in `auth.token` when a user is logged in.
 - Emits `register` with `{ userId, userModel }` on connect to join the online users map.
 - Listens for `notification` events and prepends them to the notifications list.
 - Exposes `socket`, `notifications`, `unreadCount`, `markRead`, `markAll`, and `connected`.

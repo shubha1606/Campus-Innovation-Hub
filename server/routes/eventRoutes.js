@@ -6,7 +6,8 @@ const {
   getEvents,
   getEventById,
   updateEvent,
-  deleteEvent
+  deleteEvent,
+  joinEvent
 } = require("../controllers/eventController");
 
 const { protect } = require("../middleware/authMiddleware");
@@ -21,6 +22,10 @@ router.get("/:id", getEventById);
 router.post("/", protect, createEvent);
 router.put("/:id", protect, updateEvent);
 router.delete("/:id", protect, deleteEvent);
+
+
+// Student Join Event
+router.post("/:id/join", protect, joinEvent);
 
 
 module.exports = router;

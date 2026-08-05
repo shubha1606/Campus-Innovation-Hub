@@ -11,7 +11,8 @@ const createEvent = async (req, res) => {
       organizer,
       date,
       location,
-      category
+      category,
+      registrationUrl
     } = req.body;
 
 
@@ -22,6 +23,7 @@ const createEvent = async (req, res) => {
       date,
       location,
       category,
+      registrationUrl,
       createdBy: req.user._id
     });
 
@@ -32,10 +34,10 @@ const createEvent = async (req, res) => {
     });
 
 
-  } catch(error){
+  } catch (error) {
 
     res.status(500).json({
-      message:error.message
+      message: error.message
     });
 
   }
@@ -43,21 +45,23 @@ const createEvent = async (req, res) => {
 
 
 
+
 // Get All Events
-const getEvents = async(req,res)=>{
-  try{
+const getEvents = async (req, res) => {
+  try {
 
     const events = await Event.find()
-      .populate("createdBy","name email college");
+      .populate("createdBy", "name email college")
+      .populate("participants", "name email college");
 
 
     res.status(200).json(events);
 
 
-  }catch(error){
+  } catch (error) {
 
     res.status(500).json({
-      message:error.message
+      message: error.message
     });
 
   }
@@ -65,17 +69,19 @@ const getEvents = async(req,res)=>{
 
 
 
+
 // Get Single Event
-const getEventById = async(req,res)=>{
-  try{
+const getEventById = async (req, res) => {
+  try {
 
     const event = await Event.findById(req.params.id)
-      .populate("createdBy","name email college");
+      .populate("createdBy", "name email college")
+      .populate("participants", "name email college");
 
 
-    if(!event){
+    if (!event) {
       return res.status(404).json({
-        message:"Event not found"
+        message: "Event not found"
       });
     }
 
@@ -83,10 +89,10 @@ const getEventById = async(req,res)=>{
     res.status(200).json(event);
 
 
-  }catch(error){
+  } catch (error) {
 
     res.status(500).json({
-      message:error.message
+      message: error.message
     });
 
   }
@@ -94,42 +100,44 @@ const getEventById = async(req,res)=>{
 
 
 
-// Update Event
-const updateEvent = async(req,res)=>{
-  try{
+
+// Student Join Event
+const joinEvent = async (req, res) => {
+  try {
 
     const event = await Event.findById(req.params.id);
 
 
-    if(!event){
+    if (!event) {
       return res.status(404).json({
-        message:"Event not found"
+        message: "Event not found"
       });
     }
 
 
-    if(event.createdBy.toString() !== req.user._id.toString() && req.user.role !== "admin"){
-      return res.status(403).json({
-        message:"Not authorized"
+    // Check if already joined
+    if (event.participants.includes(req.user._id)) {
+      return res.status(400).json({
+        message: "Already joined this event"
       });
     }
 
 
-    Object.assign(event,req.body);
+    event.participants.push(req.user._id);
 
     await event.save();
 
 
     res.status(200).json({
-      message:"Event Updated Successfully",
-      event
+      message: "Joined Event Successfully",
+      participantCount: event.participants.length
     });
 
 
-  }catch(error){
+  } catch (error) {
 
     res.status(500).json({
-      message:error.message
+      message: error.message
     });
 
   }
@@ -137,23 +145,74 @@ const updateEvent = async(req,res)=>{
 
 
 
-// Delete Event
-const deleteEvent = async(req,res)=>{
-  try{
+
+// Update Event
+const updateEvent = async (req, res) => {
+  try {
 
     const event = await Event.findById(req.params.id);
 
 
-    if(!event){
+    if (!event) {
       return res.status(404).json({
-        message:"Event not found"
+        message: "Event not found"
       });
     }
 
 
-    if(event.createdBy.toString() !== req.user._id.toString() && req.user.role !== "admin"){
+    if (
+      event.createdBy.toString() !== req.user._id.toString() &&
+      req.user.role !== "admin"
+    ) {
       return res.status(403).json({
-        message:"Not authorized"
+        message: "Not authorized"
+      });
+    }
+
+
+    Object.assign(event, req.body);
+
+    await event.save();
+
+
+    res.status(200).json({
+      message: "Event Updated Successfully",
+      event
+    });
+
+
+  } catch (error) {
+
+    res.status(500).json({
+      message: error.message
+    });
+
+  }
+};
+
+
+
+
+// Delete Event
+const deleteEvent = async (req, res) => {
+  try {
+
+    const event = await Event.findById(req.params.id);
+
+
+    if (!event) {
+      return res.status(404).json({
+        message: "Event not found"
+      });
+    }
+
+
+    if (
+      event.createdBy.toString() !== req.user._id.toString() &&
+      req.user.role !== "admin"
+    ) {
+      return res.status(403).json({
+        message: "Not authorized"
       });
     }
 
@@ -162,14 +221,14 @@ const deleteEvent = async(req,res)=>{
 
 
     res.status(200).json({
-      message:"Event Deleted Successfully"
+      message: "Event Deleted Successfully"
     });
 
 
-  }catch(error){
+  } catch (error) {
 
     res.status(500).json({
-      message:error.message
+      message: error.message
     });
 
   }
@@ -177,10 +236,12 @@ const deleteEvent = async(req,res)=>{
 
 
 
+
 module.exports = {
   createEvent,
   getEvents,
   getEventById,
+  joinEvent,
   updateEvent,
   deleteEvent
 };

@@ -37,8 +37,12 @@ app.set("onlineUsers", onlineUsers);
 
 // Middleware
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+// Increase request body size limit
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+
+// Serve uploaded files
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Routes
@@ -61,8 +65,11 @@ app.get("/", (req, res) => {
   res.send("🚀 Campus Innovation Hub Backend is Running...");
 });
 
+// Socket Authentication
 io.use((socket, next) => {
-  const token = socket.handshake.auth?.token || socket.handshake.headers?.authorization?.split(" ")[1];
+  const token =
+    socket.handshake.auth?.token ||
+    socket.handshake.headers?.authorization?.split(" ")[1];
 
   if (!token) {
     return next(new Error("Authentication error"));
@@ -77,6 +84,7 @@ io.use((socket, next) => {
   }
 });
 
+// Socket Connection
 io.on("connection", (socket) => {
   socket.on("register", ({ userId, userModel }) => {
     const id = userId || socket.user?.id;

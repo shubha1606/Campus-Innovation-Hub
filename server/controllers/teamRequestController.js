@@ -1,14 +1,22 @@
 const TeamRequest = require("../models/TeamRequest");
 const { createNotification } = require("./notificationController");
 
+
 // Create Team Request
 const createTeamRequest = async (req, res) => {
   try {
-    if (req.user.role !== 'student') {
-      return res.status(403).json({ message: 'Only students can create team requests' })
+    if (req.user.role !== "student") {
+      return res.status(403).json({
+        message: "Only students can create team requests",
+      });
     }
 
-    const { receiver, project, message } = req.body;
+    const {
+      receiver,
+      project,
+      message,
+    } = req.body;
+
 
     const request = await TeamRequest.create({
       sender: req.user._id,
@@ -17,98 +25,214 @@ const createTeamRequest = async (req, res) => {
       message,
     });
 
+
     await createNotification(
       {
         userId: receiver,
-        userModel: 'User',
+        userModel: "User",
         type: "teamRequest",
-        title: "New team request",
-        message: `${req.user.name} sent you a new team request.`,
+        title: "New Team Request",
+        message: `${req.user.name} sent you a team request.`,
         link: "/student/team-requests",
       },
       req
     );
+
 
     res.status(201).json({
       message: "Team Request Sent Successfully",
       request,
     });
+
+
   } catch (error) {
+
+    console.error("Create Team Request Error:", error);
+
     res.status(500).json({
       message: error.message,
     });
   }
 };
 
-// Get Team Requests relevant to the current user
-const getTeamRequests = async (req, res) => {
-  try {
-    const filter = {}
 
-    if (req.user.role === 'student') {
-      filter.$or = [{ sender: req.user._id }, { receiver: req.user._id }]
-    } else {
-      // Only students participate in team requests
-      return res.status(200).json([])
+
+
+// Get Team Requests (Sent + Received)
+const getTeamRequests = async (req, res) => {
+
+  try {
+
+    if (req.user.role !== "student") {
+      return res.status(200).json([]);
     }
 
-    const requests = await TeamRequest.find(filter)
-      .populate("sender", "name email profileImage")
-      .populate("receiver", "name email profileImage")
-      .populate("project", "title");
+
+    const requests = await TeamRequest.find({
+      $or: [
+        {
+          sender: req.user._id
+        },
+        {
+          receiver: req.user._id
+        }
+      ]
+    })
+      .populate(
+        "sender",
+        "name email profileImage"
+      )
+      .populate(
+        "receiver",
+        "name email profileImage"
+      )
+      .populate(
+        "project",
+        "title"
+      )
+      .sort({
+        createdAt: -1
+      });
+
+
 
     res.status(200).json(requests);
+
+
+
   } catch (error) {
+
+    console.error("Get Team Requests Error:", error);
+
     res.status(500).json({
       message: error.message,
     });
+
   }
+
 };
 
-// Update Team Request Status
+
+
+
+
+
+// Accept / Reject Team Request
 const updateTeamRequest = async (req, res) => {
+
   try {
+
+
     const request = await TeamRequest.findById(req.params.id);
 
+
+
     if (!request) {
+
       return res.status(404).json({
         message: "Team Request not found",
       });
+
     }
 
-    if (request.sender.toString() !== req.user._id.toString() && request.receiver.toString() !== req.user._id.toString() && req.user.role !== "admin") {
-      return res.status(403).json({ message: "Not authorized" });
+
+
+    // Only receiver can accept/reject
+    if (
+      request.receiver.toString() !== req.user._id.toString()
+      &&
+      req.user.role !== "admin"
+    ) {
+
+      return res.status(403).json({
+        message: "Only receiver can update this request",
+      });
+
     }
 
-    request.status = req.body.status;
+
+
+    const { status } = req.body;
+
+
+
+    if (
+      !["Accepted", "Rejected"].includes(status)
+    ) {
+
+      return res.status(400).json({
+        message: "Invalid status. Use Accepted or Rejected",
+      });
+
+    }
+
+
+
+
+    request.status = status;
 
     await request.save();
 
+
+
+
+
+    // Notify sender
     await createNotification(
       {
         userId: request.sender,
-        userModel: 'User',
+        userModel: "User",
         type: "teamRequest",
-        title: `Team request ${request.status.toLowerCase()}`,
-        message: `Your team request was ${request.status.toLowerCase()}.`,
+        title: `Team request ${status}`,
+        message: `Your team request was ${status.toLowerCase()}.`,
         link: "/student/team-requests",
       },
       req
     );
 
+
+
+
+
     res.status(200).json({
-      message: "Team Request Updated Successfully",
+
+      message: `Team Request ${status}`,
+
       request,
+
     });
+
+
+
+
+
   } catch (error) {
+
+
+    console.error("Update Team Request Error:", error);
+
+
     res.status(500).json({
+
       message: error.message,
+
     });
+
+
   }
+
 };
 
+
+
+
+
 module.exports = {
+
   createTeamRequest,
+
   getTeamRequests,
+
   updateTeamRequest,
+
 };

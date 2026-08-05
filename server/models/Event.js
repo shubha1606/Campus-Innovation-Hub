@@ -39,6 +39,22 @@ const eventSchema = new mongoose.Schema(
       ],
       default: "Other",
     },
+    teamMembersCount: {
+  type: Number,
+  default: 1
+},
+
+mode: {
+  type: String,
+  enum: ["Online", "Offline"],
+  default: "Offline"
+},
+
+    // NEW FIELD
+    registrationUrl: {
+      type: String,
+      trim: true,
+    },
 
     participants: [
       {

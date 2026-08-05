@@ -41,15 +41,27 @@ const createProject = async (req, res) => {
 // Get All Projects
 const getProjects = async (req, res) => {
   try {
-    const projects = await Project.find().populate(
-      "createdBy",
-      "name email college"
-    );
+
+    let projects;
+
+    if (req.user.role === "admin") {
+      projects = await Project.find()
+        .populate("createdBy", "name email college");
+
+    } else {
+      projects = await Project.find({
+        createdBy: req.user._id
+      }).populate(
+        "createdBy",
+        "name email college"
+      );
+    }
 
     res.status(200).json(projects);
+
   } catch (error) {
     res.status(500).json({
-      message: error.message,
+      message:error.message
     });
   }
 };

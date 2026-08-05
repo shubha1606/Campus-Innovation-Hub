@@ -130,11 +130,7 @@ const getMentorProfile = async (req, res) => {
 const getMentors = async (req, res) => {
   try {
     const mentors = await Mentor.find()
-      .select("-password")
-      .populate(
-        "createdBy",
-        "name email"
-      );
+      .select("-password");
 
     res.status(200).json(mentors);
 
@@ -147,14 +143,11 @@ const getMentors = async (req, res) => {
 
 
 // Get Single Mentor
+// Get Single Mentor
 const getMentorById = async (req, res) => {
   try {
     const mentor = await Mentor.findById(req.params.id)
-      .select("-password")
-      .populate(
-        "createdBy",
-        "name email"
-      );
+      .select("-password");
 
     if (!mentor) {
       return res.status(404).json({

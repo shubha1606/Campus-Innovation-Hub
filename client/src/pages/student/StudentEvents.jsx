@@ -80,10 +80,15 @@ export default function StudentEvents() {
                   <span className="badge text-xs" style={{ background: accent.bg, color: accent.color }}>{ev.category}</span>
                   <span className="text-xs" style={{ color: 'var(--muted)' }}>{formatDate(ev.date)}</span>
                 </div>
-                <div>
-                  <h3 className="font-semibold text-sm" style={{ color: 'var(--text)' }}>{ev.title}</h3>
-                  <p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>{truncate(ev.description, 80)}</p>
-                </div>
+               <div>
+  <h3 className="font-semibold text-sm" style={{ color: 'var(--text)' }}>
+    {ev.title}
+  </h3>
+
+  <p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>
+    {ev.description}
+  </p>
+</div>
                 <div className="space-y-1">
                   <div className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--muted)' }}>
                     <MapPin size={12} style={{ color: 'var(--gold)' }} /> {ev.location}

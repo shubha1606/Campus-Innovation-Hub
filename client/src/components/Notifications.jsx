@@ -10,13 +10,20 @@ export default function Notifications() {
 
   const handleToggle = () => setOpen((value) => !value)
 
-  const handleSelect = async (notification) => {
-    await markRead(notification._id)
-    setOpen(false)
-    if (notification.link) {
-      navigate(notification.link)
-    }
+ const handleSelect = async (notification) => {
+  console.log("Notification:", notification)
+  console.log("Link:", notification.link)
+
+  await markRead(notification._id)
+  setOpen(false)
+
+  if (notification.link) {
+    console.log("Navigating to:", notification.link)
+    navigate(notification.link)
+  } else {
+    console.log("No link found!")
   }
+}
 
   return (
     <div className="relative">
@@ -58,7 +65,11 @@ export default function Notifications() {
                 <button
                   key={notification._id}
                   type="button"
-                  onClick={() => handleSelect(notification)}
+                  onClick={() => {
+  console.log("Button clicked");
+  console.log(notification);
+  handleSelect(notification);
+}}
                   className="w-full text-left p-3 transition-colors border-b last:border-b-0"
                   style={{ borderColor: 'var(--border)', background: notification.read ? 'transparent' : 'rgba(212,175,55,0.08)' }}
                 >

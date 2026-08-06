@@ -92,17 +92,24 @@ const createMessage = async (req, res) => {
 
     const payload = message.toObject();
 
-    await createNotification(
-      {
-        userId: receiverId,
-        userModel: receiverModel,
-        type: "message",
-        title: "New chat message",
-        message: text ? text : "Sent a file attachment",
-        link: "/messages",
-      },
-      req
-    );
+    const messageLink =
+  receiverModel === "Mentor"
+    ? "/mentor/messages"
+    : "/student/messages";
+
+await createNotification(
+  {
+    userId: receiverId,
+    userModel: receiverModel,
+    type: "message",
+    title: "New Message",
+    message: text
+      ? `${req.user.name} sent you a message`
+      : `${req.user.name} sent you a file`,
+    link: messageLink,
+  },
+  req
+);
 
     const io = req.app.get("io");
     const onlineUsers = req.app.get("onlineUsers");

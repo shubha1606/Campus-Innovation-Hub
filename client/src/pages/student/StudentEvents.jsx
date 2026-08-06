@@ -90,16 +90,47 @@ export default function StudentEvents() {
   </p>
 </div>
                 <div className="space-y-1">
-                  <div className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--muted)' }}>
-                    <MapPin size={12} style={{ color: 'var(--gold)' }} /> {ev.location}
-                  </div>
-                  <div className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--muted)' }}>
-                    <Users size={12} style={{ color: 'var(--gold)' }} /> Organized by {ev.organizer}
-                  </div>
-                  <div className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--muted)' }}>
-                    <Tag size={12} style={{ color: 'var(--gold)' }} /> {ev.participants?.length || 0} participants
-                  </div>
-                </div>
+
+  <div className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--muted)' }}>
+    <MapPin size={12} style={{ color: 'var(--gold)' }} />
+    {ev.location}
+  </div>
+
+  <div className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--muted)' }}>
+    <Users size={12} style={{ color: 'var(--gold)' }} />
+    Organized by {ev.organizer}
+  </div>
+
+  <div className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--muted)' }}>
+    <Tag size={12} style={{ color: 'var(--gold)' }} />
+    Category: {ev.category}
+  </div>
+
+  <div className="text-xs" style={{ color: 'var(--muted)' }}>
+    💻 Mode: {ev.mode || "Offline"}
+  </div>
+
+  <div className="text-xs" style={{ color: 'var(--muted)' }}>
+    👥 Team Size: {ev.teamMembersCount || 1}
+  </div>
+
+  <div className="text-xs" style={{ color: 'var(--muted)' }}>
+    👤 Participants: {ev.participants?.length || 0}
+  </div>
+
+  {ev.registrationUrl && (
+    <a
+      href={ev.registrationUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-xs font-semibold mt-2 inline-block"
+      style={{ color: '#D4AF37' }}
+    >
+      🔗 Register Here
+    </a>
+  )}
+
+</div>
                 <button
                   onClick={() => handleJoin(ev._id)}
                   className="mt-auto w-full py-2 rounded-xl text-sm font-medium transition-all"

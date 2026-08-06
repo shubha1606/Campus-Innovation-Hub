@@ -581,3 +581,9 @@ cd server && npm start
 | `ADMIN_EMAIL`    | No       | Email for admin seeder                       |
 | `ADMIN_PASSWORD` | No       | Password for admin seeder                    |
 | `ADMIN_NAME`     | No       | Display name for admin seeder                |
+
+
+
+##Deployment links 
+1.Frontend URL : https://campus-innovation-hub-1.onrender.com
+2.Backend URL: https://campus-innovation-hub.onrender.com/

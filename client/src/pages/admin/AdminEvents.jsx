@@ -18,7 +18,6 @@ const EMPTY = {
   location: '',
   category: 'Other',
   registrationUrl: '',
-  teamMembersCount: 1,
   mode: 'Offline'
 }
 

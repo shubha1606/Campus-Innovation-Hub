@@ -71,7 +71,6 @@ export default function AdminEvents() {
       ...ev,
       date: ev.date?.slice(0, 10),
      registrationUrl: ev.registrationUrl || '',
-teamMembersCount: ev.teamMembersCount || 1,
 mode: ev.mode || 'Offline'
     })
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Trash2, FolderOpen, ExternalLink } from 'lucide-react'
 import { getProjects, deleteProject } from '../../services/api'
 import SearchBar from '../../components/SearchBar'
@@ -75,7 +76,7 @@ export default function AdminProjects() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b" style={{ borderColor: 'var(--border)' }}>
-                {['Title', 'Creator', 'Category', 'Technologies', 'Links', 'Actions'].map((h) => (
+                {['Title', 'Creator', 'Category', 'Project Type', 'Technologies', 'Links', 'Actions'].map((h) => (
                   <th key={h} className="text-left px-4 py-3 text-xs font-semibold" style={{ color: 'var(--muted)' }}>{h}</th>
                 ))}
               </tr>
@@ -86,12 +87,16 @@ export default function AdminProjects() {
                   <td className="px-4 py-3">
                     <p className="font-medium" style={{ color: 'var(--text)' }}>{p.title}</p>
                     <p className="text-xs" style={{ color: 'var(--muted)' }}>{truncate(p.description, 50)}</p>
+                    <Link to={`/admin/projects/${p._id}`} className="text-xs" style={{ color: 'var(--gold)' }}>Open workspace</Link>
                   </td>
                   <td className="px-4 py-3" style={{ color: 'var(--muted)' }}>{p.createdBy?.name || '—'}</td>
                   <td className="px-4 py-3">
                     {p.category && (
                       <span className="badge bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400">{p.category}</span>
                     )}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className="badge badge-gold">{p.projectType || 'Individual'}</span>
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex flex-wrap gap-1">

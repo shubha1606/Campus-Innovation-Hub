@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { getMeetingLinkError } = require("../utils/meetingLinkValidator");
 
 const bookingSchema = new mongoose.Schema(
   {
@@ -54,11 +55,18 @@ const bookingSchema = new mongoose.Schema(
 );
 
 bookingSchema.pre('validate', function () {
-  if (this.status === 'Approved') {
-    if (this.meetingMode === 'online' && !this.meetingLink) {
-      this.invalidate('meetingLink', 'meetingLink is required for online approved bookings');
+  if (this.meetingMode === 'online') {
+    if (this.meetingLink !== undefined) {
+      const error = getMeetingLinkError(this.meetingLink);
+      if (error) this.invalidate('meetingLink', error);
     }
 
+    if (this.status === 'Approved' && !this.meetingLink) {
+      this.invalidate('meetingLink', 'Meeting link is required for approved online bookings.');
+    }
+  }
+
+  if (this.status === 'Approved') {
     if (this.meetingMode === 'offline' && !this.location) {
       this.invalidate('location', 'location is required for offline approved bookings');
     }

@@ -15,6 +15,7 @@ const studentNav = [
   { to: '/student/profile', icon: User, label: 'Profile' },
     { to: '/student/bookings', icon: Calendar, label: 'Bookings' },
   { to: '/student/projects', icon: FolderOpen, label: 'Projects' },
+    { to: '/student/projects/discover', icon: Search, label: 'Discover Projects' },
   { to: '/student/events', icon: Calendar, label: 'Events' },
   { to: '/student/startups', icon: Rocket, label: 'Startups' },
   { to: '/student/mentors', icon: Users, label: 'Mentors' },
@@ -122,7 +123,7 @@ export default function DashboardLayout() {
             <NavLink
               key={to}
               to={to}
-              end={to === '/student' || to === '/mentor' || to === '/admin'}
+              end={to === '/student' || to === '/student/projects' || to === '/mentor' || to === '/admin'}
               className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
               onClick={() => setSidebarOpen(false)}
             >

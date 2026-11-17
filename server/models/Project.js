@@ -21,6 +21,11 @@ const projectSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    projectType: {
+      type: String,
+      enum: ["Individual", "Group"],
+      default: "Individual",
+    },
     teamMembers: [
       {
         type: mongoose.Schema.Types.ObjectId,

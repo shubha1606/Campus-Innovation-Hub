@@ -1,10 +1,11 @@
 const Booking = require("../models/Booking");
 const { createNotification } = require("./notificationController");
+const { getMeetingLinkError } = require("../utils/meetingLinkValidator");
 
 // Create Booking
 const createBooking = async (req, res) => {
   try {
-    const { mentor, date, time, topic, meetingMode } = req.body;
+    const { mentor, date, time, topic, meetingMode, meetingLink } = req.body;
 
     if (!mentor || !date || !topic || !meetingMode) {
       return res.status(400).json({ message: 'mentor, date, topic and meetingMode are required' });
@@ -15,14 +16,24 @@ const createBooking = async (req, res) => {
       return res.status(400).json({ message: 'meetingMode must be online or offline' });
     }
 
-    const booking = await Booking.create({
+    if (Object.prototype.hasOwnProperty.call(req.body, "meetingLink")) {
+      const meetingLinkError = getMeetingLinkError(meetingLink);
+      if (meetingLinkError) {
+        return res.status(400).json({ message: meetingLinkError });
+      }
+    }
+
+    const bookingData = {
       mentor,
       student: req.user._id,
       date,
       time,
       topic,
       meetingMode: normalizedMode,
-    });
+    };
+    if (meetingLink !== undefined) bookingData.meetingLink = meetingLink;
+
+    const booking = await Booking.create(bookingData);
 
     await createNotification(
       {
@@ -41,6 +52,9 @@ const createBooking = async (req, res) => {
       booking,
     });
   } catch (error) {
+    if (error.name === "ValidationError") {
+      return res.status(400).json({ message: error.message });
+    }
     res.status(500).json({
       message: error.message,
     });
@@ -123,6 +137,29 @@ const updateBooking = async (req, res) => {
       delete req.body.mentorNote;
     }
 
+    const hasMeetingLink = Object.prototype.hasOwnProperty.call(
+      req.body,
+      "meetingLink"
+    );
+    if (hasMeetingLink) {
+      const meetingLinkError = getMeetingLinkError(req.body.meetingLink);
+      if (meetingLinkError) {
+        return res.status(400).json({ message: meetingLinkError });
+      }
+    }
+
+    const nextMeetingMode = req.body.meetingMode || booking.meetingMode;
+    const nextStatus = req.body.status || booking.status;
+    if (nextMeetingMode === "online" && nextStatus === "Approved") {
+      const meetingLink = hasMeetingLink
+        ? req.body.meetingLink
+        : booking.meetingLink;
+      const meetingLinkError = getMeetingLinkError(meetingLink);
+      if (meetingLinkError) {
+        return res.status(400).json({ message: meetingLinkError });
+      }
+    }
+
     const oldStatus = booking.status;
     Object.assign(booking, req.body);
     await booking.save();
@@ -146,6 +183,9 @@ const updateBooking = async (req, res) => {
       booking,
     });
   } catch (error) {
+    if (error.name === "ValidationError") {
+      return res.status(400).json({ message: error.message });
+    }
     res.status(500).json({
       message: error.message,
     });

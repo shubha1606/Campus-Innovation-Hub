@@ -92,6 +92,9 @@ export default function StudentHome() {
                   <p className="text-sm font-medium truncate" style={{ color: 'var(--text)' }}>{p.title}</p>
                   <p className="text-xs truncate" style={{ color: 'var(--muted)' }}>{p.category} • {timeAgo(p.createdAt)}</p>
                 </div>
+                <span className="badge text-xs shrink-0" style={{ background: 'rgba(212,175,55,0.12)', color: 'var(--gold)' }}>
+                  {p.projectType || 'Individual'}
+                </span>
               </div>
             ))}
           </div>

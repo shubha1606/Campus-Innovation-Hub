@@ -4,6 +4,7 @@ import { getBookings, updateBooking } from '../../services/api'
 import { useAuth } from '../../context/AuthContext'
 import { PageSpinner } from '../../components/Spinner'
 import { formatDate } from '../../utils/helpers'
+import { getMeetingLinkError } from '../../utils/meetingLinkValidator'
 import Avatar from '../../components/Avatar'
 import Modal from '../../components/Modal'
 import toast from 'react-hot-toast'
@@ -15,6 +16,7 @@ export default function MentorRequests() {
   const [reviewModalOpen, setReviewModalOpen] = useState(false)
   const [reviewItem, setReviewItem] = useState(null)
   const [meetingDetails, setMeetingDetails] = useState('')
+  const [meetingLinkError, setMeetingLinkError] = useState('')
   const [mentorNote, setMentorNote] = useState('')
   const [reviewAction, setReviewAction] = useState('approve')
 
@@ -31,6 +33,7 @@ export default function MentorRequests() {
     setReviewItem(booking)
     setReviewAction(action)
     setMeetingDetails(action === 'approve' ? (booking.meetingMode === 'online' ? booking.meetingLink || '' : booking.location || '') : '')
+    setMeetingLinkError('')
     setMentorNote(booking.mentorNote || '')
     setReviewModalOpen(true)
   }
@@ -43,7 +46,14 @@ export default function MentorRequests() {
     }
 
     if (reviewAction === 'approve') {
-      if (!meetingDetails.trim()) {
+      if (reviewItem.meetingMode === 'online') {
+        const error = getMeetingLinkError(meetingDetails)
+        if (error) {
+          setMeetingLinkError(error)
+          toast.error(error)
+          return
+        }
+      } else if (!meetingDetails.trim()) {
         toast.error(reviewItem?.meetingMode === 'online' ? 'Enter the meeting link' : 'Enter the offline details')
         return
       }
@@ -153,11 +163,21 @@ export default function MentorRequests() {
                 <div>
                   <label className="label">{reviewItem.meetingMode === 'online' ? 'Meeting Link' : 'Offline Details'}</label>
                   <input
-                    className="input"
+                    className={`input ${meetingLinkError ? 'border-red-500' : ''}`}
                     value={meetingDetails}
-                    onChange={(e) => setMeetingDetails(e.target.value)}
+                    onChange={(e) => {
+                      setMeetingDetails(e.target.value)
+                      if (meetingLinkError) setMeetingLinkError('')
+                    }}
+                    aria-invalid={Boolean(meetingLinkError)}
+                    aria-describedby={meetingLinkError ? 'meeting-link-error' : undefined}
                     placeholder={reviewItem.meetingMode === 'online' ? 'https://meet.google.com/...' : 'Enter venue, room, or instructions'}
                   />
+                  {meetingLinkError && (
+                    <p id="meeting-link-error" className="text-xs mt-1 text-red-400" role="alert">
+                      {meetingLinkError}
+                    </p>
+                  )}
                 </div>
               </>
             )}

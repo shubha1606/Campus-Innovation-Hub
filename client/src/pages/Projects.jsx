@@ -84,6 +84,7 @@ export default function Projects() {
                 <div className="proj-body">
                   <div className="proj-meta">
                     <span className="proj-category">{p.category}</span>
+                    <span className="proj-category">{p.projectType || 'Individual'}</span>
                     <span className={`proj-status ${p.status === 'Active' ? 'status-active' : 'status-done'}`}>
                       {p.status}
                     </span>

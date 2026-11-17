@@ -15,6 +15,8 @@ import AccessDenied from './pages/AccessDenied'
 import StudentHome from './pages/student/StudentHome'
 import StudentProfile from './pages/student/StudentProfile'
 import StudentProjects from './pages/student/StudentProjects'
+import ProjectDiscovery from './pages/student/ProjectDiscovery'
+import ProjectWorkspace from './pages/ProjectWorkspace'
 import StudentEvents from './pages/student/StudentEvents'
 import StudentBookings from './pages/student/StudentBookings'
 import StudentStartups from './pages/student/StudentStartups'
@@ -68,6 +70,8 @@ function AppRoutes() {
         <Route path="/student/profile" element={<StudentProfile />} />
       <Route path="/student/bookings" element={<StudentBookings />} />
         <Route path="/student/projects" element={<StudentProjects />} />
+      <Route path="/student/projects/discover" element={<ProjectDiscovery />} />
+      <Route path="/student/projects/:projectId" element={<ProjectWorkspace />} />
         <Route path="/student/events" element={<StudentEvents />} />
         <Route path="/student/startups" element={<StudentStartups />} />
         <Route path="/student/mentors" element={<StudentMentors />} />
@@ -81,6 +85,7 @@ function AppRoutes() {
         <Route path="/mentor/profile" element={<MentorProfile />} />
         <Route path="/mentor/students" element={<MentorStudents />} />
         <Route path="/mentor/projects" element={<MentorProjects />} />
+        <Route path="/mentor/projects/:projectId" element={<ProjectWorkspace />} />
         <Route path="/mentor/requests" element={<MentorRequests />} />
         <Route path="/mentor/events" element={<MentorEvents />} />
         <Route path="/mentor/messages" element={<MentorMessages />} />
@@ -92,6 +97,7 @@ function AppRoutes() {
         <Route path="/admin/students" element={<AdminStudents />} />
         <Route path="/admin/mentors" element={<AdminMentors />} />
         <Route path="/admin/projects" element={<AdminProjects />} />
+        <Route path="/admin/projects/:projectId" element={<ProjectWorkspace />} />
         <Route path="/admin/events" element={<AdminEvents />} />
         <Route path="/admin/startups" element={<AdminStartups />} />
         <Route path="/admin/settings" element={<AdminSettings />} />

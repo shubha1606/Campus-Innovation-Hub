@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { FolderOpen, ExternalLink } from 'lucide-react'
 import { getProjects } from '../../services/api'
 import SearchBar from '../../components/SearchBar'
@@ -146,6 +147,10 @@ export default function MentorProjects() {
                 {truncate(p.description, 80)}
               </p>
 
+              <span className="badge badge-gold text-xs self-start">
+                {p.projectType || 'Individual'}
+              </span>
+
               {p.technologies?.length > 0 && (
                 <div className="flex flex-wrap gap-1">
                   {p.technologies.slice(0, 3).map((t) => (
@@ -211,6 +216,9 @@ export default function MentorProjects() {
                     {p.category}
                   </span>
                 )}
+                <Link to={`/mentor/projects/${p._id}`} className="text-xs" style={{ color: 'var(--gold)' }}>
+                  Workspace
+                </Link>
               </div>
             </div>
           ))}

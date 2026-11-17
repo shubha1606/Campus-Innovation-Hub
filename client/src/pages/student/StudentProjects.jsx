@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Plus, Edit2, Trash2, ExternalLink, FolderOpen } from 'lucide-react'
 import { getProjects, createProject, updateProject, deleteProject } from '../../services/api'
 import { useAuth } from '../../context/AuthContext'
@@ -11,7 +12,7 @@ import { useDebounce } from '../../hooks/useDebounce'
 import { truncate, CATEGORY_OPTIONS } from '../../utils/helpers'
 import toast from 'react-hot-toast'
 
-const EMPTY = { title: '', description: '', technologies: '', category: '', githubUrl: '', liveDemoUrl: '' }
+const EMPTY = { title: '', description: '', technologies: '', category: '', projectType: '', githubUrl: '', liveDemoUrl: '' }
 
 export default function StudentProjects() {
   const { user } = useAuth()
@@ -38,13 +39,20 @@ export default function StudentProjects() {
   const openCreate = () => { setEditItem(null); setForm(EMPTY); setModal(true) }
   const openEdit = (p) => {
     setEditItem(p)
-    setForm({ ...p, technologies: Array.isArray(p.technologies) ? p.technologies.join(', ') : p.technologies })
+    setForm({
+      ...p,
+      projectType: p.projectType || 'Individual',
+      technologies: Array.isArray(p.technologies) ? p.technologies.join(', ') : p.technologies,
+    })
     setModal(true)
   }
 
   const handleSave = async (e) => {
     e.preventDefault()
-    if (!form.title || !form.description) { toast.error('Title and description required'); return }
+    if (!form.title || !form.description || !form.projectType) {
+      toast.error('Title, description, and project type are required')
+      return
+    }
     setSaving(true)
     try {
       const payload = { ...form, technologies: form.technologies.split(',').map((t) => t.trim()).filter(Boolean) }
@@ -77,7 +85,10 @@ export default function StudentProjects() {
           <h1 className="text-xl font-bold gold-gradient-text">Projects</h1>
           <p className="text-sm mt-0.5" style={{ color: 'var(--muted)' }}>{filtered.length} projects found</p>
         </div>
-        <button className="btn-primary shrink-0" onClick={openCreate}><Plus size={16} /> New Project</button>
+        <div className="flex flex-wrap gap-2">
+          <Link className="btn-secondary shrink-0" to="/student/projects/discover">Browse group projects</Link>
+          <button className="btn-primary shrink-0" onClick={openCreate}><Plus size={16} /> New Project</button>
+        </div>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3">
@@ -131,6 +142,7 @@ export default function StudentProjects() {
                   <h3 className="font-semibold text-sm" style={{ color: 'var(--text)' }}>{p.title}</h3>
                   <p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>{truncate(p.description, 80)}</p>
                 </div>
+                <span className="badge badge-gold text-xs self-start">{p.projectType || 'Individual'}</span>
                 {p.technologies?.length > 0 && (
                   <div className="flex flex-wrap gap-1">
                     {p.technologies.slice(0, 3).map((t) => (
@@ -156,6 +168,9 @@ export default function StudentProjects() {
                       <ExternalLink size={13} /> Demo
                     </a>
                   )}
+                  <Link to={`/student/projects/${p._id}`} className="text-xs transition-colors" style={{ color: 'var(--gold)' }}>
+                    Workspace
+                  </Link>
                   <span className="ml-auto text-xs" style={{ color: 'var(--muted2)' }}>{p.createdBy?.name}</span>
                 </div>
               </div>
@@ -178,6 +193,20 @@ export default function StudentProjects() {
                 {CATEGORY_OPTIONS.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
+          </div>
+          <div>
+            <label className="label" htmlFor="projectType">Project Type *</label>
+            <select
+              id="projectType"
+              className="input"
+              value={form.projectType}
+              onChange={(e) => setForm({ ...form, projectType: e.target.value })}
+              required
+            >
+              <option value="">Select project type</option>
+              <option value="Individual">Individual</option>
+              <option value="Group">Group</option>
+            </select>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div><label className="label">GitHub URL</label><input className="input" value={form.githubUrl} onChange={(e) => setForm({ ...form, githubUrl: e.target.value })} placeholder="https://github.com/…" /></div>

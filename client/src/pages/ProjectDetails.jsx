@@ -32,6 +32,7 @@ export default function ProjectDetails() {
           <div className="pd-banner-info">
             <div className="pd-banner-meta">
               <span className="pd-category">{project.category}</span>
+              <span className="pd-category">{project.projectType || 'Individual'}</span>
               <span className={`pd-status ${project.status === 'Active' ? 'status-active' : 'status-done'}`}>
                 {project.status === 'Active' ? '🟢' : '✅'} {project.status}
               </span>
@@ -93,6 +94,10 @@ export default function ProjectDetails() {
                 <li>
                   <span className="pd-info-label">Category</span>
                   <span className="pd-info-value">{project.category}</span>
+                </li>
+                <li>
+                  <span className="pd-info-label">Project Type</span>
+                  <span className="pd-info-value">{project.projectType || 'Individual'}</span>
                 </li>
                 <li>
                   <span className="pd-info-label">Status</span>

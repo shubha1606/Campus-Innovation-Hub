@@ -28,7 +28,7 @@ router.get("/:id", getMentorById);
 
 
 // ---------------- Admin Routes ----------------
-router.put("/:id", protect, adminOnly, updateMentor);
+router.put("/:id", protect,  updateMentor);
 router.delete("/:id", protect, adminOnly, deleteMentor);
 
 

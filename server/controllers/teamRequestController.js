@@ -18,12 +18,12 @@ const createTeamRequest = async (req, res) => {
     } = req.body;
 
 
-    const request = await TeamRequest.create({
-      sender: req.user._id,
-      receiver,
-      project,
-      message,
-    });
+   const request = await TeamRequest.create({
+  sender: req.user._id,
+  receiver,
+  ...(project && { project }),
+  message,
+});
 
 
     await createNotification(
